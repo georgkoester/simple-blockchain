@@ -1,33 +1,30 @@
 package block;
 
-public class BlockData {
+public class BlockData
+{
 
-	private String name;
-	private int age;
+    private String data;
 
-	public BlockData(String name, int age) {
-		this.name = name;
-		this.age = age;
-	}
+    public BlockData( String data )
+    {
+        this.data = data;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getData()
+    {
+        return data;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setData( String data )
+    {
+        this.data = data;
+    }
 
-	public int getAge() {
-		return age;
-	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
-
-	@Override
-	public String toString() {
-		return name + "n" + age;
-	}
+    @Override
+    public String toString()
+    {
+        return "BlockData{" +
+                "data='" + data + '\'' +
+                '}';
+    }
 }

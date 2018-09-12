@@ -1,59 +1,106 @@
 package block;
 
-public class Block {
+import encript.SHA256;
 
-	private int index;
-	private long timestamp;
-	private String previous_hash;
-	private String hash;
-	private BlockData data;
+public class Block
+{
+    // Header
+    private int height;
+    private long timestamp;
+    private String previous_hash;
+    private String hash;
+    private HashCashInfo hashCashInfo;
+    // Header END
 
-	public Block(int index, String previous_hash, long timestamp, String hash, BlockData data) {
-		this.index = index;
-		this.timestamp = timestamp;
-		this.previous_hash = previous_hash;
-		this.hash = hash;
-		this.data = data;
-	}
+    private BlockData data;
 
-	public int getIndex() {
-		return index;
-	}
+    public Block( int height, String previous_hash, long timestamp, HashCashInfo hashCashInfo, BlockData data )
+    {
+        this.height = height;
+        this.timestamp = timestamp;
+        this.previous_hash = previous_hash;
+        this.hashCashInfo = hashCashInfo;
 
-	public void setIndex(int index) {
-		this.index = index;
-	}
+        this.data = data;
+    }
 
-	public long getTimestamp() {
-		return timestamp;
-	}
+    public String getBlockContentHash()
+    {
+        return hashBlockContent(getHeight(), getPrevious_hash(), getTimestamp(), getData());
+    }
 
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
-	}
+    public static String hashBlockContent( int height, String previous_hash, long timestamp, BlockData data )
+    {
+        // most header fields and data
+        String content = height + previous_hash + timestamp + data.toString();
+        return SHA256.toSha256(content);
+    }
 
-	public String getPrevious_hash() {
-		return previous_hash;
-	}
+    public int getHeight()
+    {
+        return height;
+    }
 
-	public void setPrevious_hash(String previous_hash) {
-		this.previous_hash = previous_hash;
-	}
+    public void setHeight( int height )
+    {
+        this.height = height;
+    }
 
-	public String getHash() {
-		return hash;
-	}
+    public long getTimestamp()
+    {
+        return timestamp;
+    }
 
-	public void setHash(String hash) {
-		this.hash = hash;
-	}
+    public void setTimestamp( long timestamp )
+    {
+        this.timestamp = timestamp;
+    }
 
-	public BlockData getData() {
-		return data;
-	}
+    public String getPrevious_hash()
+    {
+        return previous_hash;
+    }
 
-	public void setData(BlockData data) {
-		this.data = data;
-	}
+    public void setPrevious_hash( String previous_hash )
+    {
+        this.previous_hash = previous_hash;
+    }
 
+    public String getHash()
+    {
+        return getHashCashInfo().getHash();
+    }
+
+    public void setHash( String hash )
+    {
+        this.hash = hash;
+    }
+
+    public BlockData getData()
+    {
+        return data;
+    }
+
+    public void setData( BlockData data )
+    {
+        this.data = data;
+    }
+
+    public HashCashInfo getHashCashInfo()
+    {
+        return hashCashInfo;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Block{" +
+                "height=" + height +
+                ", timestamp=" + timestamp +
+                ", previous_hash='" + previous_hash + '\'' +
+                ", hash='" + hash + '\'' +
+                ", hashCashInfo=" + hashCashInfo +
+                ", data=" + data +
+                '}';
+    }
 }

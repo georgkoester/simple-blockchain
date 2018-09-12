@@ -1,39 +1,45 @@
 package miner;
 
-import java.security.DigestException;
-import java.security.NoSuchAlgorithmException;
-
-import chain.Blockchain;
 import block.Block;
 import block.BlockData;
+import block.HashCashInfo;
+import chain.Blockchain;
+import chain.InvalidNewBlockException;
 
-public class Miner {
+public class Miner extends Thread
+{
+    private final Blockchain chain;
 
-	public static Block generateNewBlock(BlockData data) throws NoSuchAlgorithmException, DigestException {
+    public Miner( Blockchain blockchain )
+    {
+        this.chain = blockchain;
+    }
 
-		Block previous_block = Blockchain.getLatestBlock();
-		int index = previous_block.getIndex() + 1;
-		long timestamp = System.currentTimeMillis();
-		String previous_hash = previous_block.getHash();
-		String hash = PoW.generateHash(index, previous_hash, timestamp, data);
+    public void run()
+    {
+        for (int i = 0; i < 100000; i++) {
 
-		return new Block(index, previous_hash, timestamp, hash, data);
-	}
+            BlockData data = new BlockData("Data_" + i);
 
-	public static boolean isNewBlockValid(Block new_block) throws NoSuchAlgorithmException, DigestException {
+            Block block = generateNewBlock(chain.getLatestBlock(), data);
 
-		boolean is_valid = true;
-		Block previous_block = Blockchain.getLatestBlock();
+            try {
+                chain.submitNewBlock(block);
+                System.out.println("" + this + " succeeded in pushing a block: " + block);
+            } catch (InvalidNewBlockException e) {
+                System.out.println("" + this +": Darn, was too slow. Block apparently outdated.");
+            }
+        }
+    }
 
-		if (previous_block.getIndex() != new_block.getIndex() - 1)
-			is_valid = false;
+    public Block generateNewBlock( Block currentBlock, BlockData data )
+    {
+        Block previous_block = currentBlock;
+        int height = previous_block.getHeight() + 1;
+        long timestamp = System.currentTimeMillis();
+        String previous_hash = previous_block.getHash();
+        HashCashInfo hash = PoW.generateHash(data.toString());
 
-		else if (!previous_block.getHash().equals(new_block.getPrevious_hash()))
-			is_valid = false;
-
-		else
-			is_valid = PoW.validate(new_block.getHash());
-
-		return is_valid;
-	}
+        return new Block(height, previous_hash, timestamp, hash, data);
+    }
 }

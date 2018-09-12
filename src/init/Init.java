@@ -1,23 +1,23 @@
 package init;
 
+import chain.Blockchain;
+import miner.Miner;
+
 import java.security.DigestException;
 import java.security.NoSuchAlgorithmException;
 
-import chain.Blockchain;
-import miner.Miner;
-import block.Block;
-import block.BlockData;
+public class Init
+{
 
-public class Init {
+    public static void main( String[] args ) throws NoSuchAlgorithmException, DigestException
+    {
+        Blockchain chain = new Blockchain();
 
-	public static void main(String[] args) throws NoSuchAlgorithmException, DigestException {
-		for (int i = 0; i < 100; i++) {
-			BlockData data = new BlockData("Andre", i);
-			Block block = Miner.generateNewBlock(data);
-			if (Miner.isNewBlockValid(block))
-				Blockchain.pushNewBlock(block);
+        // start a miner:
+        Miner miner1 = new Miner(chain);
+        miner1.start();
 
-			System.out.println(block.getHash());
-		}
-	}
+        Miner miner2 = new Miner(chain);
+        miner2.start();
+    }
 }
